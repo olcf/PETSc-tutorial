@@ -1,0 +1,46 @@
+include ../../Build/Makefile_build
+
+all: Advection3D
+
+Advection3D: \
+	RealKindModule.o MeshModule.o FieldsModule.o UniverseModule.o \
+	AdvectionModule.o Advection3D.o
+	$(FLINKER) $(FLAGS) -o Advection3D_$(MACHINE) \
+	RealKindModule.o MeshModule.o FieldsModule.o UniverseModule.o \
+	AdvectionModule.o Advection3D.o \
+	$(LIBRARIES)
+
+clean:
+	rm -f *.o *.mod *.ld
+
+clobber: clean
+	rm -f Advection3D_$(MACHINE)
+
+Advection3D.o: \
+  RealKindModule.o \
+  UniverseModule.o \
+  MeshModule.o \
+  AdvectionModule.o \
+  Advection3D.F90
+
+RealKindModule.o: \
+  RealKindModule.F90
+
+MeshModule.o: \
+  RealKindModule.o \
+  MeshModule.F90
+
+FieldsModule.o: \
+  MeshModule.o \
+  FieldsModule.F90
+
+UniverseModule.o: \
+  MeshModule.o \
+  FieldsModule.o \
+  UniverseModule.F90
+
+AdvectionModule.o: \
+  RealKindModule.o \
+  MeshModule.o \
+  FieldsModule.o \
+  AdvectionModule.F90

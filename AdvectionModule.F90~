@@ -1,0 +1,67 @@
+MODULE AdvectionModule
+
+  USE RealKindModule, ONLY: &
+    Half
+
+  IMPLICIT NONE
+  PRIVATE
+
+#include "finclude/petsc.h90"
+
+  PUBLIC :: &
+    Advect3D
+
+CONTAINS
+
+
+  SUBROUTINE Advect3D(D_NEW, D_OLD, V1, dX1, dt, &
+               X1B, X1E, X2B, X2E, X3B, X3E, SW)
+
+    PetscInt, INTENT(in) :: &
+      X1B, X1E, X2B, X2E, X3B, X3E, SW
+    PetscReal, DIMENSION(X1B : X1E, X2B : X2E, X3B : X3E), INTENT(inout) :: &
+      D_NEW
+    PetscReal, DIMENSION(X1B - SW : X1E + SW, &
+                         X2B - SW : X2E + SW, &
+                         X3B - SW : X3E + SW), INTENT(in) :: &
+      D_OLD
+    PetscReal, DIMENSION(X1B : X1E, X2B : X2E, X3B : X3E), INTENT(in) :: &
+      V1, &
+      dX1
+    PetscReal, INTENT(in) :: &
+      dt
+
+    PetscReal :: &
+      FluxOuterX1, &
+      FluxInnerX1
+    PetscInt :: &
+      iX1, iX2, iX3
+
+    DO iX3 = X3B, X3E
+      DO iX2 = X2B, X2E
+        DO iX1 = X1B, X1E
+
+          FluxInnerX1 &
+            = Half * ( ( V1(iX1, iX2, iX3) &
+                         + ABS(V1(iX1, iX2, iX3)) ) * D_OLD(iX1-1, iX2, iX3) &
+                       + ( V1(iX1, iX2, iX3) &
+                           - ABS(V1(iX1, iX2, iX3)) ) * D_OLD(iX1, iX2, iX3) )
+
+          FluxOuterX1 &
+            = Half * ( ( V1(iX1, iX2, iX3) &
+                         + ABS(V1(iX1, iX2, iX3)) ) * D_OLD(iX1, iX2, iX3) &
+                       + ( V1(iX1, iX2, iX3) &
+                           - ABS(V1(iX1, iX2, iX3)) ) * D_OLD(iX1+1, iX2, iX3) )
+
+          D_NEW(iX1, iX2, iX3) &
+            = D_OLD(iX1, iX2, iX3) &
+                - dt * ( FluxOuterX1 - FluxInnerX1 ) / dX1(iX1, iX2, iX3)
+
+        END DO
+      END DO
+    END DO
+
+  END SUBROUTINE Advect3D
+
+
+END MODULE AdvectionModule

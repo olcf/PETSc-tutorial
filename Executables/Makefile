@@ -1,0 +1,5 @@
+MACHINE   = titan_gnu
+OPT_LEVEL = DEBUG
+FLAGS     = $(FLAGS_$(OPT_LEVEL))
+
+include ../Makefile_Advection

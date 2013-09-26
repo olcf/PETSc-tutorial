@@ -1,0 +1,12 @@
+#!/bin/bash
+#PBS -A STF006
+#PBS -N Advection3D
+#PBS -j oe
+#PBS -l walltime=01:00:00,nodes=64
+#PBS -l gres=widow2%widow3
+
+cd $WORKDIR/scratch/petscCode/Tutorials/Advection/Executables
+pwd
+date
+
+aprun -n1024 ./Advection3D_titan_cray

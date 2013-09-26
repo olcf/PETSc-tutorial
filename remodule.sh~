@@ -1,0 +1,14 @@
+#!/bin/bash
+
+source ${MODULESHOME}/init/bash
+
+module unload PrgEnv-gnu
+module unload PrgEnv-pgi
+module unload PrgEnv-cray
+module unload PrgEnv-intel
+module unload PrgEnv-pathscale
+
+module load PrgEnv-gnu
+module swap gcc gcc/4.7.1
+
+module load petsc/3.3
